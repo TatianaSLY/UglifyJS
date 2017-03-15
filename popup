@@ -1,0 +1,51 @@
+			/*скрипт для формы регистрации/ВХОДа*/
+			/*ищем все нужные элементы - сам вход, всплывающее окно регистрации и кнопку закрытия окна*/
+			var link = document.querySelector(".login"); /* Ищем элемент на странице с классом .login*/
+			var popup = document.querySelector(".modal-content");
+			var close = popup.querySelector(".modal-content-close"); /*находим(var) элемент, по которому юзер кликнет, чтобы закрыть окно и записываем его в переменную(close)*/
+			var form = popup.querySelector("form"); /*находим саму форму регистрации, чтобы в дальнейшем проверить, заполнили ли ее перед "отправкой"*/
+			var login = popup.querySelector("[name=login]");  /*находим поле "логин" в форме регистрации(т.е. ищем не по всему дереву(DOM)document, а только во всплывающем окне(popup)*/
+			var password = popup.querySelector("[name=password]");
+			var storage = localStorage.getItem("login"); /*найдем значение в хранилище (добавленный логин)*/
+
+
+			/*открываем окно регистрации/входа*/
+			link.addEventListener("click", function(event) { /*отслеживаем все клики нажатия на ссыдку ВХОДА*/
+				event.preventDefault(); /*отменяет действия по умолчанию*/
+			popup.classList.add("modal-content-show"); /*добавляем новый класс "modal-content-show" в css*/
+			/*login.focus(); /*фокус на самом поле ввода(в данном случае на поле "логин"),т.е. при открытии формы регистрации курсор сразу будет установлен на поле "логин"*/
+				if (storage) {  /*если значение внутри переменной storage существует, то устанавливаем это значение(value)=stprage*/
+					login.value = storage;
+					password.focus();
+				} else {
+					login.focus();
+				}
+			});
+
+			/*закрываем окно регистрации/входа*/
+			close.addEventListener("click", function(event) { /*отслеживаем все клики нажатия на крестик(Х)*/
+				event.preventDefault(); /*отменяет действия по умолчанию*/
+				popup.classList.remove("modal-content-show"); /*во всплывающем окне при помощи classList.remove - удалится(отменится) "modal-content-show" - всплывающее окно закроется*/
+				popup.classList.remove("modal-error"); /*отменяем этот класс при закрытии или отправке формы(всплывающее окно не будет "трястись")*/
+			});
+
+			form.addEventListener("submit", function(event) {
+				/*console.log(login.value);  /*выводит в F12 Console значение, введенное по поле логин*/
+				/*console.log(password.value);  /*выводит в F12 Console значение, введенное по поле пароль*/
+				if (!login.value || !password.value) { /*задаем условие if(оператор данного условия: если условие в круглых скобках верное, то запускается код в фигурных скобках, а !-переворачивает условие наоборот:если значение отсутствует у поля login; условие ||(логическое "или")*/
+					event.preventDefault(); /*в данном случае действие по умолчанию(отправка формы) отменяется при условии: если(if) юзер не ввел ни логин ни пароль(т.е. форма не отправится)*/
+					popup.classList.add("modal-error"); /*или применить(раскомментировать): /*console.log("Нужно ввести логин и пароль");*/
+				} else {
+					localStorage.setItem("login", login.value);
+				}
+			});
+
+			window.addEventListener("keydown", function(event) { /*зададим условие, чтобы на какой-то области браузера при нажатии кнопки ESC закрывалось окно регистрации/ВХОД*/
+				if (event.keyCode === 27) { /*27 - код клавиши Esc*/
+					if (popup.classList.contains("modal-content-show")) {
+						popup.classList.remove("modal-content-show");
+						popup.classList.remove("modal-error");
+					}
+				}
+			});
+
